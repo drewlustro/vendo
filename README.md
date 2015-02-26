@@ -38,7 +38,7 @@ vendo
 * _ Camera module stateful reporting via python or node
 * _ Display Camera image dump in web client frontend for verify step
 
-##### Analog Sensorts
+##### Analog Sensors
 
 * _ Yes/No button test
 * _ Yes/No button signal integration via GPIO
