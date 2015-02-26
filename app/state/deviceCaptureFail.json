@@ -1,0 +1,11 @@
+{
+    "time": "Thu, 26 Feb 2015 07:11:28 GMT",
+    "error": {
+        "code": 500,
+        "message": "Photo analysis failed. Please try again."
+    },
+    "url": null,
+    "handle": null,
+    "service": null,
+    "certainty": 0.0
+}

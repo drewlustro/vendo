@@ -1,0 +1,12 @@
+{
+    "time": "Thu, 26 Feb 2015 07:11:28 GMT",
+    "timeElapsed": 2000,
+    "timeLimit": 10000,
+    "error": null,
+    "complete": false,
+    "target": "msodrew",
+    "service": "instagram",
+    "follow": false,
+    "like": false,
+    "comment": false
+}
