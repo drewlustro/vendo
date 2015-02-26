@@ -1,0 +1,3 @@
+[submodule "app/styles/vendor/powpow"]
+	path = app/styles/vendor/powpow
+	url = git@github.com:maxrelax/powpow.git
