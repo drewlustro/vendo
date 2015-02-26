@@ -6,10 +6,3 @@ dist
 bower_components
 test/bower_components
 
-client/node_modules
-client/dist
-client/.tmp
-client/.sass-cache
-client/bower_components
-client/test/bower_components
-
