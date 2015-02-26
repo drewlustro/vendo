@@ -2,7 +2,13 @@
 
 var React = window.React = require('react'),
     Kiosk = require("./ui/Kiosk"),
+    CoinSwitch = require("./ui/CoinSwitch"),
     mountNode = document.getElementById("app");
+
+var todoStyle = {
+    float: 'left',
+    maxWidth: '50%'
+};
 
 var TodoList = React.createClass({
   render: function() {
@@ -28,18 +34,21 @@ var TodoApp = React.createClass({
   render: function() {
     return (
       <div>
-        <h3>TODO</h3>
-        <TodoList items={this.state.items} />
-        <form onSubmit={this.handleSubmit}>
-          <input onChange={this.onChange} value={this.state.text} />
-          <button>{'Add #' + (this.state.items.length + 1)}</button>
-        </form>
-        <Kiosk />
+        <div style={todoStyle}>
+            <h3>TODO</h3>
+            <TodoList items={this.state.items} />
+            <form onSubmit={this.handleSubmit}>
+              <input onChange={this.onChange} value={this.state.text} />
+              <button>{'Add #' + (this.state.items.length + 1)}</button>
+            </form>
+            <Kiosk />
+        </div>
+        <CoinSwitch source="state/coinSwitchWait.json" />
       </div>
     );
   }
 });
 
 
-React.renderComponent(<TodoApp />, mountNode);
+React.render(<TodoApp />, mountNode);
 
