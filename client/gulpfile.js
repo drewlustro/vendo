@@ -3,7 +3,15 @@
 // generated on 2015-02-26 using generator-gulp-webapp 0.2.0
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
+var path = require('path');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var source = require('vinyl-source-stream'),
+    sourceFile = './app/scripts/app.js',
+    destFolder = './.tmp/scripts',
+    destFileName = 'app.js';
 
+// Sass + CSS
 gulp.task('styles', function () {
   return gulp.src('app/styles/main.sass')
     .pipe($.plumber())
@@ -12,14 +20,40 @@ gulp.task('styles', function () {
       precision: 10
     }))
     .pipe($.autoprefixer({browsers: ['last 1 version']}))
-    .pipe(gulp.dest('.tmp/styles'));
+    .pipe(gulp.dest('.tmp/styles'))
+    .pipe($.size());
 });
 
+// JS Linting
 gulp.task('jshint', function () {
   return gulp.src('app/scripts/**/*.js')
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.jshint.reporter('fail'));
+});
+
+// Scripts
+gulp.task('scripts', function () {
+    var bundler = watchify(browserify({
+        entries: [sourceFile],
+        insertGlobals: true,
+        cache: {},
+        packageCache: {},
+        fullPaths: true
+    }));
+
+    bundler.on('update', rebundle);
+
+    function rebundle() {
+        return bundler.bundle()
+            // log errors if they happen
+            .on('error', $.util.log.bind($.util, 'Browserify Error'))
+            .pipe(source(destFileName))
+            .pipe(gulp.dest(destFolder));
+    }
+
+    return rebundle();
+
 });
 
 gulp.task('html', ['styles'], function () {
@@ -36,7 +70,8 @@ gulp.task('html', ['styles'], function () {
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe($.if('*.html', $.minifyHtml({conditionals: true, loose: true})))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist'))
+    .pipe($.size());
 });
 
 gulp.task('images', function () {
@@ -45,7 +80,8 @@ gulp.task('images', function () {
       progressive: true,
       interlaced: true
     })))
-    .pipe(gulp.dest('dist/images'));
+    .pipe(gulp.dest('dist/images'))
+    .pipe($.size());
 });
 
 gulp.task('fonts', function () {
@@ -65,9 +101,22 @@ gulp.task('extras', function () {
   }).pipe(gulp.dest('dist'));
 });
 
+// Clean
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
-gulp.task('connect', ['styles'], function () {
+// Bundle
+// gulp.task('bundle', ['styles', 'scripts', 'bower'], function(){
+gulp.task('bundle', ['styles', 'scripts'], function(){
+    var assets = $.useref.assets({searchPath: '{.tmp,app}'});
+    return gulp.src('./app/*.html')
+       .pipe(assets)
+       .pipe(assets.restore())
+       .pipe($.useref())
+       .pipe(gulp.dest('dist'));
+});
+
+// Connect
+gulp.task('connect', ['styles', 'bundle'], function () {
   var serveStatic = require('serve-static');
   var serveIndex = require('serve-index');
   var app = require('connect')()
@@ -86,6 +135,7 @@ gulp.task('connect', ['styles'], function () {
     });
 });
 
+// Serve task
 gulp.task('serve', ['connect', 'watch'], function () {
   require('opn')('http://localhost:9000');
 });
@@ -94,7 +144,7 @@ gulp.task('serve', ['connect', 'watch'], function () {
 gulp.task('wiredep', function () {
   var wiredep = require('wiredep').stream;
 
-  gulp.src('app/styles/*.scss')
+  gulp.src('app/styles/*.sass')
     .pipe(wiredep())
     .pipe(gulp.dest('app/styles'));
 
@@ -117,6 +167,16 @@ gulp.task('watch', ['connect'], function () {
   gulp.watch('app/styles/**/*.{sass,scss}', ['styles']);
   gulp.watch('bower.json', ['wiredep']);
 });
+
+// [NOT USED] Jest Tests
+// gulp.task('jest', function () {
+//     var nodeModules = path.resolve('./node_modules');
+//     return gulp.src('app/scripts/**/__tests__')
+//         .pipe($.jest({
+//             scriptPreprocessor: nodeModules + '/gulp-jest/preprocessor.js',
+//             unmockedModulePathPatterns: [nodeModules + '/react']
+//         }));
+// });
 
 gulp.task('build', ['jshint', 'html', 'images', 'fonts', 'extras'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
