@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 var React = window.React = require('react'),
-    Timer = require("./ui/Timer"),
+    Kiosk = require("./ui/Kiosk"),
     mountNode = document.getElementById("app");
 
 var TodoList = React.createClass({
@@ -34,7 +34,7 @@ var TodoApp = React.createClass({
           <input onChange={this.onChange} value={this.state.text} />
           <button>{'Add #' + (this.state.items.length + 1)}</button>
         </form>
-        <Timer />
+        <Kiosk />
       </div>
     );
   }
